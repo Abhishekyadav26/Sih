@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>City Hospital Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .dashboard-card {
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease-in-out;
+        }
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+        }
+        .card-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        .status-good { color: #28a745; }
+        .status-moderate { color: #ffc107; }
+        .status-critical { color: #dc3545; }
+        .hospital-table {
+            background-color: white;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        .hospital-table th {
+            background-color: #007bff;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">City Hospital Dashboard</a>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="card dashboard-card h-100">
+                    <div class="card-body text-center">
+                        <i class="bi bi-heart-pulse card-icon status-moderate"></i>
+                        <h5 class="card-title">City Health Status</h5>
+                        <p class="card-text" id="cityStatus">Moderate</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card dashboard-card h-100">
+                    <div class="card-body text-center">
+                        <i class="bi bi-check-circle card-icon status-good"></i>
+                        <i class="bi bi-hospital card-icon"></i>
+                        <h5 class="card-title">Total Beds</h5>
+                        <p class="card-text" id="totalBeds">1000</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card dashboard-card h-100">
+                    <div class="card-body text-center">
+                        <i class="bi bi-check-circle card-icon status-good"></i>
+                        <h5 class="card-title">Available Beds</h5>
+                        <p class="card-text" id="availableBeds">350</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card dashboard-card h-100">
+                    <div class="card-body text-center">
+                        <i class="bi bi-x-circle card-icon status-critical"></i>
+                        <h5 class="card-title">Occupied Beds</h5>
+                        <p class="card-text" id="occupiedBeds">650</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card dashboard-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Bed Availability Overview</h5>
+                        <canvas id="bedAvailabilityChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="card dashboard-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Hospital-wise Bed Availability</h5>
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover hospital-table">
+                                <thead>
+                                    <tr>
+                                        <th>Hospital Name</th>
+                                        <th>General Beds</th>
+                                        <th>ICU Beds</th>
+                                        <th>Emergency Beds</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="hospitalTableBody">
+                                    <!-- Hospital data will be inserted here by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-light text-center text-lg-start mt-4">
+        <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
+            © 2023 City Hospital Dashboard - Updated <span id="lastUpdated"></span>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Simulated data - in a real application, this would come from an API
+        let cityData = {
+            status: "Moderate",
+            totalBeds: 1000,
+            availableBeds: 350,
+            occupiedBeds: 650
+        };
+
+        const hospitals = [
+            { name: "Central Hospital", general: { available: 50, total: 200 }, icu: { available: 5, total: 25 }, emergency: { available: 10, total: 25 } },
+            { name: "St. Mary's Medical Center", general: { available: 30, total: 130 }, icu: { available: 3, total: 15 }, emergency: { available: 5, total: 15 } },
+            { name: "City General Hospital", general: { available: 80, total: 280 }, icu: { available: 8, total: 30 }, emergency: { available: 15, total: 35 } },
+            { name: "Memorial Hospital", general: { available: 40, total: 160 }, icu: { available: 4, total: 20 }, emergency: { available: 8, total: 20 } },
+        ];
+
+        function updateDashboard() {
+            document.getElementById('cityStatus').textContent = cityData.status;
+            document.getElementById('totalBeds').textContent = cityData.totalBeds;
+            document.getElementById('availableBeds').textContent = cityData.availableBeds;
+            document.getElementById('occupiedBeds').textContent = cityData.occupiedBeds;
+
+            const statusIcon = document.querySelector('.bi-heart-pulse');
+            statusIcon.classList.remove('status-good', 'status-moderate', 'status-critical');
+            statusIcon.classList.add(`status-${cityData.status.toLowerCase()}`);
+
+            updateHospitalTable();
+            updateBedAvailabilityChart();
+            document.getElementById('lastUpdated').textContent = new Date().toLocaleString();
+        }
+
+        function updateHospitalTable() {
+            const tableBody = document.getElementById('hospitalTableBody');
+            tableBody.innerHTML = '';
+            hospitals.forEach(hospital => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${hospital.name}</td>
+                    <td>${hospital.general.available} / ${hospital.general.total}</td>
+                    <td>${hospital.icu.available} / ${hospital.icu.total}</td>
+                    <td>${hospital.emergency.available} / ${hospital.emergency.total}</td>
+                    <td>${getHospitalStatus(hospital)}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function getHospitalStatus(hospital) {
+            const totalAvailable = hospital.general.available + hospital.icu.available + hospital.emergency.available;
+            const totalBeds = hospital.general.total + hospital.icu.total + hospital.emergency.total;
+            const availabilityPercentage = (totalAvailable / totalBeds) * 100;
+
+            if (availabilityPercentage > 20) {
+                return '<span class="badge bg-success">Available</span>';
+            } else if (availabilityPercentage > 5) {
+                return '<span class="badge bg-warning text-dark">Limited</span>';
+            } else {
+                return '<span class="badge bg-danger">Full</span>';
+            }
+        }
+
+        let bedAvailabilityChart;
+
+        function updateBedAvailabilityChart() {
+            const ctx = document.getElementById('bedAvailabilityChart').getContext('2d');
+            
+            if (bedAvailabilityChart) {
+                bedAvailabilityChart.destroy();
+            }
+
+            bedAvailabilityChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['General', 'ICU', 'Emergency'],
+                    datasets: [{
+                        label: 'Available',
+                        data: [
+                            hospitals.reduce((sum, hospital) => sum + hospital.general.available, 0),
+                            hospitals.reduce((sum, hospital) => sum + hospital.icu.available, 0),
+                            hospitals.reduce((sum, hospital) => sum + hospital.emergency.available, 0)
+                        ],
+                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }, {
+                        label: 'Occupied',
+                        data: [
+                            hospitals.reduce((sum, hospital) => sum + (hospital.general.total - hospital.general.available), 0),
+                            hospitals.reduce((sum, hospital) => sum + (hospital.icu.total - hospital.icu.available), 0),
+                            hospitals.reduce((sum, hospital) => sum + (hospital.emergency.total - hospital.emergency.available), 0)
+                        ],
+                        backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Beds'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Bed Categories'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initial update
+        updateDashboard();
+
+        // Simulated real-time updates
+        setInterval(() => {
+            // Simulate changes in bed availability
+            cityData.availableBeds = Math.max(0, cityData.availableBeds - Math.floor(Math.random() * 10));
+            cityData.occupiedBeds = cityData.totalBeds - cityData.availableBeds;
+
+            // Update city health status based on bed availability
+            if (cityData.availableBeds < 100) {
+                cityData.status = "Critical";
+            } else if (cityData.availableBeds < 300) {
+                cityData.status = "Moderate";
+            } else {
+                cityData.status = "Good";
+            }
+
+            // Simulate changes in hospital data
+            hospitals.forEach(hospital => {
+                ['general', 'icu', 'emergency'].forEach(type => {
+                    const change = Math.floor(Math.random() * 3) - 1; // -1, 0, or 1
+                    hospital[type].available = Math.max(0, Math.min(hospital[type].total, hospital[type].available + change));
+                });
+            });
+
+            updateDashboard();
+        }, 5000); // Update every 5 seconds
+    </script>
+</body>
+</html>
