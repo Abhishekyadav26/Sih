@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Appointment Booking</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .doctor-card {
+            height: 100%;
+        }
+        .badge-online {
+            background-color: #d1e7dd;
+            color: #0f5132;
+        }
+        .badge-offline {
+            background-color: #cfe2ff;
+            color: #084298;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-5">
+        <h1 class="mb-4">Doctor Appointment Booking</h1>
+
+        <!-- Speciality and Location Selection -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <select id="specialitySelect" class="form-select">
+                    <option value="">Select Speciality</option>
+                    <option value="cardiologist">Cardiologist</option>
+                    <option value="dermatologist">Dermatologist</option>
+                    <option value="pediatrician">Pediatrician</option>
+                </select>
+            </div>
+            <div class="col-md-3 mb-3">
+                <select id="locationSelect" class="form-select">
+                    <option value="">Kolkata</option>
+                    <option value="new-york">New Town</option>
+                    <option value="los-angeles">Dum Dum</option>
+                    <option value="chicago">Sealdah</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Doctor List -->
+        <div id="doctorList" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-5">
+            <!-- Doctor cards will be dynamically inserted here -->
+        </div>
+
+        <!-- Booking Status -->
+        <h2 class="mb-4">Booking Status</h2>
+        <ul class="nav nav-tabs mb-3" id="bookingTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="current-tab" data-bs-toggle="tab" data-bs-target="#current" type="button" role="tab" aria-controls="current" aria-selected="true">Current Bookings</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="previous-tab" data-bs-toggle="tab" data-bs-target="#previous" type="button" role="tab" aria-controls="previous" aria-selected="false">Previous Bookings</button>
+            </li>
+        </ul>
+        <div class="tab-content" id="bookingTabsContent">
+            <div class="tab-pane fade show active" id="current" role="tabpanel" aria-labelledby="current-tab">
+                <!-- Current bookings will be dynamically inserted here -->
+            </div>
+            <div class="tab-pane fade" id="previous" role="tabpanel" aria-labelledby="previous-tab">
+                <!-- Previous bookings will be dynamically inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking Form Modal -->
+    <div class="modal fade" id="bookingFormModal" tabindex="-1" aria-labelledby="bookingFormModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="bookingFormModalLabel">Book an Appointment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="bookingForm">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Phone</label>
+                            <input type="tel" class="form-control" id="phone" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="date" class="form-label">Date</label>
+                            <input type="date" class="form-control" id="date" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="time" class="form-label">Time</label>
+                            <input type="time" class="form-control" id="time" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Confirm Booking</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking Confirmation Modal -->
+    <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmationModalLabel">Appointment Confirmed</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="confirmationMessage"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Mock data for doctors
+        const doctors = [
+            { id: 1, name: "Dr. Deep Goel", speciality: "Cardiologist", location: "New York", online: true, offline: true },
+            { id: 2, name: "Dr. Sandeep Nayar", speciality: "Dermatologist", location: "Los Angeles", online: true, offline: false },
+            { id: 3, name: "Dr. Bhushan Nariani", speciality: "Pediatrician", location: "Chicago", online: false, offline: true },
+        ];
+
+        // Mock data for bookings
+        let bookings = [
+            { id: 1, doctorName: "Dr. Subhash Chandra", date: "2023-06-15", status: "Upcoming" },
+            { id: 2, doctorName: "Dr. Ishwar Bohra", date: "2023-06-10", status: "Completed" },
+        ];
+
+        // Function to render doctor cards
+        function renderDoctorCards() {
+            const doctorList = document.getElementById('doctorList');
+            doctorList.innerHTML = '';
+
+            doctors.forEach(doctor => {
+                const card = document.createElement('div');
+                card.className = 'col';
+                card.innerHTML = `
+                    <div class="card doctor-card">
+                        <div class="card-body">
+                            <h5 class="card-title">${doctor.name}</h5>
+                            <p class="card-text">${doctor.speciality}</p>
+                            <p class="card-text"><small class="text-muted"><i class="bi bi-geo-alt"></i> ${doctor.location}</small></p>
+                            <div class="mb-3">
+                                ${doctor.online ? '<span class="badge badge-online me-2">Online</span>' : ''}
+                                ${doctor.offline ? '<span class="badge badge-offline">Offline</span>' : ''}
+                            </div>
+                            <button class="btn btn-primary w-100" onclick="openBookingForm(${doctor.id})">Book an Appointment</button>
+                        </div>
+                    </div>
+                `;
+                doctorList.appendChild(card);
+            });
+        }
+
+        // Function to render bookings
+        function renderBookings() {
+            const currentBookings = document.getElementById('current');
+            const previousBookings = document.getElementById('previous');
+            currentBookings.innerHTML = '';
+            previousBookings.innerHTML = '';
+
+            bookings.forEach(booking => {
+                const bookingElement = document.createElement('div');
+                bookingElement.className = 'card mb-3';
+                bookingElement.innerHTML = `
+                    <div class="card-body d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="card-title">${booking.doctorName}</h5>
+                            <p class="card-text"><small class="text-muted"><i class="bi bi-calendar"></i> ${booking.date}</small></p>
+                        </div>
+                        <button class="btn btn-outline-primary">${booking.status === 'Upcoming' ? 'Cancel' : 'Book Again'}</button>
+                    </div>
+                `;
+
+                if (booking.status === 'Upcoming') {
+                    currentBookings.appendChild(bookingElement);
+                } else {
+                    previousBookings.appendChild(bookingElement);
+                }
+            });
+        }
+
+        // Function to open booking form
+        function openBookingForm(doctorId) {
+            const doctor = doctors.find(d => d.id === doctorId);
+            const modalTitle = document.getElementById('bookingFormModalLabel');
+            modalTitle.textContent = `Book an Appointment with ${doctor.name}`;
+            
+            const modal = new bootstrap.Modal(document.getElementById('bookingFormModal'));
+            modal.show();
+        }
+
+        // Function to handle form submission
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            
+            const newBooking = {
+                id: bookings.length + 1,
+                doctorName: document.getElementById('bookingFormModalLabel').textContent.replace('Book an Appointment with ', ''),
+                date: formData.get('date'),
+                status: 'Upcoming'
+            };
+
+            bookings.push(newBooking);
+            renderBookings();
+
+            const bookingFormModal = bootstrap.Modal.getInstance(document.getElementById('bookingFormModal'));
+            bookingFormModal.hide();
+
+            const confirmationMessage = document.getElementById('confirmationMessage');
+            confirmationMessage.textContent = `Your appointment with ${newBooking.doctorName} has been successfully booked for ${newBooking.date} at ${formData.get('time')}. We'll send you a confirmation email with further details.`;
+
+            const confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
+            confirmationModal.show();
+
+            form.reset();
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            renderDoctorCards();
+            renderBookings();
+
+            const bookingForm = document.getElementById('bookingForm');
+            bookingForm.addEventListener('submit', handleFormSubmit);
+        });
+    </script>
+</body>
+</html>

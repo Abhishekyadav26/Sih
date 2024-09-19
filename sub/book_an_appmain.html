@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Finder</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Find Hospital</h1>
+        
+        <!-- Hospital Search Section -->
+        <div id="hospitalSearch">
+            <div class="mb-3">
+                <label for="locationSearch" class="form-label">Search by Location:</label>
+                <input type="text" class="form-control" id="locationSearch" placeholder="Enter location">
+            </div>
+            <button class="btn btn-primary" onclick="searchHospitals()">Search Hospitals</button>
+            
+            <div id="hospitalList" class="mt-4"></div>
+        </div>
+
+        <!-- Hospital Details Section -->
+        <div id="hospitalDetails" class="hidden mt-4">
+            <h2 id="hospitalName"></h2>
+            <p id="hospitalBeds"></p>
+            <p id="hospitalEmail"></p>
+            <p id="hospitalContact"></p>
+            <p id="hospitalEmergency"></p>
+            <button class="btn btn-secondary" onclick="showAllDoctors()">All Doctors</button>
+            <button class="btn btn-primary" onclick="backToSearch()">Back to Search</button>
+        </div>
+
+        <!-- All Doctors Section -->
+        <div id="allDoctors" class="hidden mt-4">
+            <h2>All Doctors</h2>
+            <div id="doctorsList"></div>
+        </div>
+
+        <!-- Appointment Form -->
+        <div id="appointmentForm" class="hidden mt-4">
+            <h2>Book an Appointment</h2>
+            <form onsubmit="bookAppointment(event)">
+                <div class="mb-3">
+                    <label for="patientName" class="form-label">Name:</label>
+                    <input type="text" class="form-control" id="patientName" required>
+                </div>
+                <div class="mb-3">
+                    <label for="patientEmail" class="form-label">Email:</label>
+                    <input type="email" class="form-control" id="patientEmail" required>
+                </div>
+                <div class="mb-3">
+                    <label for="appointmentDate" class="form-label">Preferred Date:</label>
+                    <input type="date" class="form-control" id="appointmentDate" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Book Appointment</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Sample data (replace with actual data or API calls)
+        const hospitals = [
+            {
+                id: 1,
+                name: "City General Hospital",
+                location: "Downtown",
+                beds: 200,
+                email: "info@citygeneral.com",
+                contact: "+1 (555) 123-4567",
+                emergency: true
+            },
+            {
+                id: 2,
+                name: "Suburban Medical Center",
+                location: "Suburbs",
+                beds: 150,
+                email: "contact@suburbanmed.com",
+                contact: "+1 (555) 987-6543",
+                emergency: false
+            }
+        ];
+
+        const doctors = [
+            {
+                id: 1,
+                name: "Dr. Pradeep Chowbey",
+                hospital: "City General Hospital",
+                schedule: "Mon-Wed: 9AM-5PM"
+            },
+            {
+                id: 2,
+                name: "Dr. Bipen Walia",
+                hospital: "Suburban Medical Center",
+                schedule: "Thu-Fri: 10AM-6PM"
+            }
+        ];
+
+        function searchHospitals() {
+            const location = document.getElementById('locationSearch').value.toLowerCase();
+            const hospitalList = document.getElementById('hospitalList');
+            hospitalList.innerHTML = '';
+
+            const filteredHospitals = hospitals.filter(hospital => 
+                hospital.location.toLowerCase().includes(location)
+            );
+
+            filteredHospitals.forEach(hospital => {
+                const hospitalDiv = document.createElement('div');
+                hospitalDiv.className = 'mb-2';
+                hospitalDiv.innerHTML = `
+                    <button class="btn btn-outline-primary" onclick="showHospitalDetails(${hospital.id})">
+                        ${hospital.name}
+                    </button>
+                `;
+                hospitalList.appendChild(hospitalDiv);
+            });
+        }
+
+        function showHospitalDetails(hospitalId) {
+            const hospital = hospitals.find(h => h.id === hospitalId);
+            document.getElementById('hospitalName').textContent = hospital.name;
+            document.getElementById('hospitalBeds').textContent = `Beds available: ${hospital.beds}`;
+            document.getElementById('hospitalEmail').textContent = `Email: ${hospital.email}`;
+            document.getElementById('hospitalContact').textContent = `Contact: ${hospital.contact}`;
+            document.getElementById('hospitalEmergency').textContent = `Emergency services: ${hospital.emergency ? 'Available' : 'Not available'}`;
+
+            document.getElementById('hospitalSearch').classList.add('hidden');
+            document.getElementById('hospitalDetails').classList.remove('hidden');
+        }
+
+        function showAllDoctors() {
+            const doctorsList = document.getElementById('doctorsList');
+            doctorsList.innerHTML = '';
+
+            doctors.forEach(doctor => {
+                const doctorDiv = document.createElement('div');
+                doctorDiv.className = 'card mb-3';
+                doctorDiv.innerHTML = `
+                    <div class="card-body">
+                        <h5 class="card-title">${doctor.name}</h5>
+                        <p class="card-text">Hospital: ${doctor.hospital}</p>
+                        <p class="card-text">Schedule: ${doctor.schedule}</p>
+                        <button class="btn btn-primary" onclick="showAppointmentForm(${doctor.id})">Book Appointment</button>
+                    </div>
+                `;
+                doctorsList.appendChild(doctorDiv);
+            });
+
+            document.getElementById('hospitalDetails').classList.add('hidden');
+            document.getElementById('allDoctors').classList.remove('hidden');
+        }
+
+        function showAppointmentForm(doctorId) {
+            document.getElementById('allDoctors').classList.add('hidden');
+            document.getElementById('appointmentForm').classList.remove('hidden');
+        }
+
+        function bookAppointment(event) {
+            event.preventDefault();
+            alert('Appointment booked successfully!');
+            document.getElementById('appointmentForm').classList.add('hidden');
+            document.getElementById('hospitalSearch').classList.remove('hidden');
+        }
+
+        function backToSearch() {
+            document.getElementById('hospitalDetails').classList.add('hidden');
+            document.getElementById('hospitalSearch').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>

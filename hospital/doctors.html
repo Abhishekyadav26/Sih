@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CityCare - Specialised Doctors</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        header {
+            background-color: #fff;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        .logo img {
+            width: 30px;
+            margin-right: 10px;
+        }
+        nav a {
+            margin-left: 20px;
+            text-decoration: none;
+            color: #333;
+        }
+        .emergency-btn {
+            background-color: #ff4d4d;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        main {
+            padding: 20px;
+        }
+        h1 {
+            font-size: 24px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .doctors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        .doctor-card {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .doctor-card h2 {
+            font-size: 16px;
+            margin-top: 0;
+            margin-bottom: 5px;
+        }
+        .doctor-card p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #666;
+        }
+        .book-btn {
+            background-color: #ffebeb;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            margin-top: 10px;
+            cursor: pointer;
+            width: 100%;
+            color: #ff4d4d;
+            font-weight: bold;
+        }
+        .book-btn:hover {
+            background-color: #ffe0e0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <span>🏙️👥 CityCare</span>
+        </div>
+        <nav>
+            <a href="#">Contact Us</a>
+            <a href="#">Sign Up / Sign In</a>
+            <a href="#">Medication</a>
+            <a href="#" class="emergency-btn">EMERGENCY</a>
+        </nav>
+    </header>
+    <main>
+        <h1>Specialised Doctors</h1>
+        <div class="doctors-grid">
+            <div class="doctor-card">
+                <h2>Dr. Taniya Shinde</h2>
+                <p>Dermatologist</p>
+                <p>Available</p>
+                <button class="book-btn">Book An Appointment</button>
+            </div>
+            <div class="doctor-card">
+                <h2>Dr. Prashant</h2>
+                <p>General Surgery</p>
+                <p>Available</p>
+                <button class="book-btn">Book An Appointment</button>
+            </div>
+            <div class="doctor-card">
+                <h2>Dr. Nihal Sharma</h2>
+                <p>Anesthesiology</p>
+                <p>Available</p>
+                <button class="book-btn">Book An Appointment</button>
+            </div>
+            <div class="doctor-card">
+                <h2>Dr. Anubhav</h2>
+                <p>Cardio</p>
+                <p>Available</p>
+                <button class="book-btn">Book An Appointment</button>
+            </div>
+            <div class="doctor-card">
+                <h2>Dr. Anuradha</h2>
+                <p>Neurologist</p>
+                <p>Available</p>
+                <button class="book-btn">Book An Appointment</button>
+            </div>
+            <div class="doctor-card">
+                <h2>Dr Prashant</h2>
+                <p>Nerves</p>
+                <p>Available</p>
+                <button class="book-btn">Book An Appointment</button>
+            </div>
+            <div class="doctor-card">
+                <h2>DR. Abhay Bansal</h2>
+                <p>Neurologist</p>
+                <p>Available</p>
+                <button class="book-btn">Book An Appointment</button>
+            </div>
+            <div class="doctor-card">
+                <h2>Mr. Pankaj Kumar</h2>
+                <p>Neurologist</p>
+                <p>Available</p>
+                <button class="book-btn">Book An Appointment</button>
+            </div>
+            <div class="doctor-card">
+                <h2>Mrs. Shruti Sharma</h2>
+                <p>Neurologist</p>
+                <p>Available</p>
+                <button class="book-btn">Book An Appointment</button>
+            </div>
+            <div class="doctor-card">
+                <h2>Dr. Ripen Gupta</h2>
+                <p>Neurologist</p>
+                <p>Available</p>
+                <button class="book-btn">Book An Appointment</button>
+            </div>
+            <div class="doctor-card">
+                <h2>Dr. Shree</h2>
+                <p>Pulmonologist</p>
+                <p>Available</p>
+                <button class="book-btn">Book An Appointment</button>
+            </div>
+            <div class="doctor-card">
+                <h2>Dr. Mahesh</h2>
+                <p>Pulmonologist</p>
+                <p>Available</p>
+                <button class="book-btn">Book An Appointment</button>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

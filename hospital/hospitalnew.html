@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Directory</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .hospital-card {
+            margin-bottom: 20px;
+        }
+        .doctor-list {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Hospital Directory</h1>
+        <div id="hospitalList" class="row"></div>
+    </div>
+
+    <!-- Modal for booking -->
+    <div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="bookingModalLabel">Book Appointment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="bookingForm">
+                        <div class="mb-3">
+                            <label for="patientName" class="form-label">Patient Name</label>
+                            <input type="text" class="form-control" id="patientName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="appointmentDate" class="form-label">Appointment Date</label>
+                            <input type="date" class="form-control" id="appointmentDate" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Book Appointment</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const hospitals = [
+            {
+                name: "City General Hospital",
+                email: "info@citygeneral.com",
+                phone: "+919876321455",
+                emergency: true,
+                doctors: [
+                    { name: "Dr. Arvinder Singh Soin", specialty: "Cardiology" },
+                    { name: "Dr. Vivek Vij", specialty: "Neurology" }
+                ],
+                opdDoctors: [
+                    { name: "Dr. Ramdip Ray", specialty: "Orthopedics" },
+                    { name: "Dr. Naresh Trehan", specialty: "Pediatrics" }
+                ]
+            },
+            {
+                name: "Sunshine Medical Center",
+                email: "contact@sunshinemedical.com",
+                phone: "+919876328555",
+                emergency: false,
+                doctors: [
+                    { name: "Dr. Y k Mishra", specialty: "Oncology" },
+                    { name: "Dr. Manjeet Sandhra", specialty: "Dermatology" }
+                ],
+                opdDoctors: [
+                    { name: "Dr. Manoj Dutta", specialty: "Ophthalmology" },
+                    { name: "Dr. Oberoi", specialty: "Gynecology" }
+                ]
+            }
+        ];
+
+        function createHospitalCard(hospital) {
+            const card = document.createElement('div');
+            card.className = 'col-md-6 hospital-card';
+            card.innerHTML = `
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">${hospital.name}</h5>
+                        <p class="card-text">Email: ${hospital.email}</p>
+                        <p class="card-text">Phone: ${hospital.phone}</p>
+                        <p class="card-text">Emergency: ${hospital.emergency ? 'Available' : 'Not Available'}</p>
+                        <button class="btn btn-primary me-2" onclick="toggleDoctorList('${hospital.name}', 'doctors')">View Doctors</button>
+                        <button class="btn btn-secondary" onclick="toggleDoctorList('${hospital.name}', 'opdDoctors')">View OPD Doctors</button>
+                        <div class="doctor-list mt-3" id="${hospital.name}-doctors"></div>
+                        <div class="doctor-list mt-3" id="${hospital.name}-opdDoctors"></div>
+                    </div>
+                </div>
+            `;
+            return card;
+        }
+
+        function toggleDoctorList(hospitalName, doctorType) {
+            const hospital = hospitals.find(h => h.name === hospitalName);
+            const doctorListElement = document.getElementById(`${hospitalName}-${doctorType}`);
+            const doctors = hospital[doctorType];
+
+            if (doctorListElement.style.display === 'none' || doctorListElement.style.display === '') {
+                doctorListElement.innerHTML = `
+                    <h6>${doctorType === 'doctors' ? 'Doctors' : 'OPD Doctors'}</h6>
+                    <ul class="list-group">
+                        ${doctors.map(doctor => `
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                ${doctor.name} - ${doctor.specialty}
+                                <button class="btn btn-sm btn-outline-primary" onclick="openBookingModal('${doctor.name}', '${doctor.specialty}')">Book</button>
+                            </li>
+                        `).join('')}
+                    </ul>
+                `;
+                doctorListElement.style.display = 'block';
+            } else {
+                doctorListElement.style.display = 'none';
+            }
+        }
+
+        function openBookingModal(doctorName, specialty) {
+            const modal = new bootstrap.Modal(document.getElementById('bookingModal'));
+            document.getElementById('bookingModalLabel').textContent = `Book Appointment with ${doctorName} (${specialty})`;
+            modal.show();
+        }
+
+        document.getElementById('bookingForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const patientName = document.getElementById('patientName').value;
+            const appointmentDate = document.getElementById('appointmentDate').value;
+            alert(`Appointment booked for ${patientName} on ${appointmentDate}`);
+            bootstrap.Modal.getInstance(document.getElementById('bookingModal')).hide();
+        });
+
+        function initializeHospitalList() {
+            const hospitalListElement = document.getElementById('hospitalList');
+            hospitals.forEach(hospital => {
+                hospitalListElement.appendChild(createHospitalCard(hospital));
+            });
+        }
+
+        initializeHospitalList();
+    </script>
+</body>
+</html>
